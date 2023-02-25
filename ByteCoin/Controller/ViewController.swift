@@ -13,6 +13,7 @@ class ViewController: UIViewController {
 //MARK: - Variables
 
     var labels = LabelProperty()
+    var coinManager = CoinManager()
     
 //MARK: - UIViews/UIStackViews
     
@@ -22,6 +23,13 @@ class ViewController: UIViewController {
         return image
     }()
     
+    lazy var coinView: UIView = {
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: 374, height: 80))
+        view.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0.2470588235)
+        view.addSubview(horizontalStackView)
+        return view
+    }()
+    
     lazy var verticalStackView: UIStackView = {
         let stack = UIStackView(frame: CGRect(x: 0, y: 0, width: 414, height: 165))
         stack.axis = .vertical
@@ -29,7 +37,8 @@ class ViewController: UIViewController {
         stack.alignment = .center
         stack.contentMode = .scaleToFill
         stack.distribution = .fill
-        [].forEach {
+        [titleLabel,
+        coinView].forEach {
             stack.addArrangedSubview($0)
         }
         return stack
@@ -42,7 +51,9 @@ class ViewController: UIViewController {
         stack.alignment = .center
         stack.contentMode = .scaleToFill
         stack.distribution = .fill
-        [].forEach {
+        [bitcoinImage,
+        currencyRateLabel,
+        currencyLabel].forEach {
             stack.addArrangedSubview($0)
         }
         return stack
@@ -87,7 +98,7 @@ class ViewController: UIViewController {
     
 //MARK: - Other UI Elements
     
-    lazy var pickerView: UIPickerView = {
+    lazy var pickerCurrencyView: UIPickerView = {
         let picker = UIPickerView(frame: CGRect(x: 0, y: 0, width: 414, height: 216))
         picker.contentMode = .scaleToFill
         return picker
@@ -96,10 +107,46 @@ class ViewController: UIViewController {
 //MARK: - ViewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
+        pickerCurrencyView.delegate = self
+        view.addSubview(backgroundImage)
+        view.addSubview(verticalStackView)
+        view.addSubview(pickerCurrencyView)
+        
+        setupConstraints()
+        
         
     }
     
 //MARK: - Setup constrains
+    
+    func setupConstraints() {
+        pickerCurrencyView.snp.makeConstraints { make in
+            make.bottom.equalToSuperview()
+            make.trailing.equalToSuperview()
+            make.leading.equalToSuperview()
+            make.height.equalTo(216)
+        }
+        
+        verticalStackView.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(80)
+            make.leading.equalToSuperview()
+            make.trailing.equalToSuperview()
+            make.height.equalTo(165)
+        }
+        
+        coinView.snp.makeConstraints { make in
+            make.height.equalTo(80)
+            make.bottom.equalTo(verticalStackView)
+            make.trailing.equalTo(verticalStackView).offset(-10)
+        }
+        
+        bitcoinImage.snp.makeConstraints { make in
+            make.height.equalTo(80)
+            make.width.equalTo(80)
+            
+        }
+        
+    }
     
 //MARK: - Methods
     
@@ -112,11 +159,27 @@ extension ViewController: UIPickerViewDelegate, UIPickerViewDataSource {
     
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        <#code#>
+        
+        return 1
+        
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        <#code#>
+        
+        return coinManager.currencyArray.count
+        
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        
+        return coinManager.currencyArray[row]
+        
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        
+        currencyLabel.text = coinManager.currencyArray[row]
+        
     }
     
     
