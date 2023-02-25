@@ -108,6 +108,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         pickerCurrencyView.delegate = self
+        coinManager.delegate = self
         view.addSubview(backgroundImage)
         view.addSubview(verticalStackView)
         view.addSubview(pickerCurrencyView)
@@ -179,6 +180,7 @@ extension ViewController: UIPickerViewDelegate, UIPickerViewDataSource {
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         
         currencyLabel.text = coinManager.currencyArray[row]
+        coinManager.fetchRest(currency: coinManager.currencyArray[row])
         
     }
     
@@ -187,4 +189,24 @@ extension ViewController: UIPickerViewDelegate, UIPickerViewDataSource {
 
 //MARK: - Extension ViewController CoinManagerDelegate
 
-
+extension ViewController: CoinManagerDelegate {
+    func updateCoin(_ coinManager: CoinManager, coin: CoinModel) {
+        
+        currencyRateLabel.text = coin.currencyRateString
+        
+    }
+    
+    func failure(error: Error) {
+        
+        let alert = UIAlertController(title: "Ошибка", message: error.localizedDescription, preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "OK", style: .default) { alertAction in
+            return
+        }
+        
+        alert.addAction(cancelAction)
+        present(alert, animated: true)
+        
+    }
+    
+    
+}
